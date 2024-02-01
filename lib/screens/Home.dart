@@ -62,8 +62,12 @@ class _HomeState extends State<Home> {
     if (snapshot.connectionState == ConnectionState.waiting){
     return const Text('loading ....');
     }
-    return ListView(
-      children: snapshot.data!.docs.map<Widget>((doc) => _buildUserListItem(doc)).toList(),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+
+      child: ListView(
+        children: snapshot.data!.docs.map<Widget>((doc) => _buildUserListItem(doc)).toList(),
+      ),
     );
   }
 
@@ -76,16 +80,25 @@ Widget _buildUserListItem(DocumentSnapshot document){
 
     //display all users except current one
   if(_auth.currentUser!.email !=data['email']){
-    return ListTile(
-      title: Text(data['email']),
-      onTap: (){
-        //chat page of the clicked user
-        Navigator.push(context,MaterialPageRoute(builder: (context) => ChatPage(
-          receiverUserEmail:data['email'] ?? data['email'] ?? 'emailInconnu',
-          receiverUserID: data['username'] ?? data['uid'] ?? 'UtilisateurInconnu',
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: ListTile(
+        shape:RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0), // Set the border radius here
+        ) ,
+        selectedTileColor: Colors.white,
+        title: Text(data['username'] , style: TextStyle(color: Colors.black , fontSize: 20),),
+        subtitle: Text(data['email'],style: TextStyle(color: Colors.black , fontSize: 18)),
+        tileColor: Colors.white60,
+        onTap: (){
+          //chat page of the clicked user
+          Navigator.push(context,MaterialPageRoute(builder: (context) => ChatPage(
+            receiverUserEmail:data['email'] ?? data['email'] ?? 'emailInconnu',
+            receiverUserID: data['username'] ?? data['uid'] ?? 'UtilisateurInconnu',
 
-        ),));
-      },
+          ),));
+        },
+      ),
     );
   }
   else{

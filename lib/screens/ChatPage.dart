@@ -35,6 +35,8 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.receiverUserID),
+        backgroundColor: Colors.green,
+
       ),
       body: Column(
         children: [
@@ -43,7 +45,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
           _buildMessageInput(),
 
-          SizedBox( height:25)
+          SizedBox( height:10)
         ],
       ),
     );
@@ -114,30 +116,38 @@ class _ChatPageState extends State<ChatPage> {
 
 //build message input
   Widget _buildMessageInput() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          // Other widgets can be added here
+    return Container(
 
-          // Expanded TextField using custom MyTextField
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              decoration: InputDecoration(
-                labelText: 'Enter Message',
-                border: OutlineInputBorder(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          children: [
+            // Other widgets can be added here
+
+            // Expanded TextField using custom MyTextField
+            Expanded(
+              child: TextField(
+                style: TextStyle(color: Colors.black,fontSize: 18),
+                controller: _messageController,
+                decoration: InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  filled: true,
+                  fillColor: Colors.white60,
+                  labelText: 'Enter Message',
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: false,
               ),
-              obscureText: false,
             ),
-          ),
-          IconButton(
-              onPressed: sendMessage,
-              icon: const Icon(
-                Icons.arrow_upward,
-                size: 40,
-              ))
-        ],
+            IconButton(
+                onPressed: sendMessage,
+                icon: const Icon(
+                  Icons.arrow_upward,
+                  size: 40,
+                ))
+          ],
+        ),
       ),
     );
   }

@@ -57,7 +57,7 @@ class _MySplashPageState extends State<MySplash> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.pink),
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
             ),
             SizedBox(height: 10),
             Text(
