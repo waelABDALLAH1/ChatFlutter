@@ -9,7 +9,7 @@ class ChatService extends ChangeNotifier {
   final FirebaseFirestore _firerStore = FirebaseFirestore.instance;
 
   //SEND message
-  Future<void> sendMessage(String receiverId, String message) async {
+  Future<void> sendMessage(String receiverEmail, String message) async {
     //get current user
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
@@ -19,12 +19,12 @@ class ChatService extends ChangeNotifier {
     Message newMessage = Message(
         senderusername: currentUserId,
         senderEmail: currentUserEmail,
-        receiverusername: receiverId,
+        receiverEmail: receiverEmail,
         message: message,
         timestamp: timestamp);
 
     //construire chat room
-    List<String> ids = [currentUserId, receiverId];
+    List<String> ids = [currentUserEmail, receiverEmail];
     ids.sort();
     String chatRoomId = ids.join("_");
     // add the message to db
@@ -33,8 +33,8 @@ class ChatService extends ChangeNotifier {
   }
 
 //getmessages
-  Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
-    List<String> ids = [userId, otherUserId];
+  Stream<QuerySnapshot> getMessages(String userEmail, String otherUserEmail) {
+    List<String> ids = [userEmail, otherUserEmail];
     ids.sort();
     String chatRoomId = ids.join("_");
     return _firerStore.collection('chat_rooms').doc(chatRoomId).collection(
