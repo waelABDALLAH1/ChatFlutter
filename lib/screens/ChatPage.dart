@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo/chat_bubble.dart';
 import 'package:todo/chat_service.dart';
 
 class ChatPage extends StatefulWidget {
@@ -40,7 +41,9 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: _buildMessageList(),
           ),
-          _buildMessageInput()
+          _buildMessageInput(),
+
+          SizedBox( height:25)
         ],
       ),
     );
@@ -49,8 +52,8 @@ class _ChatPageState extends State<ChatPage> {
   //buiild message list
   Widget _buildMessageList() {
     return StreamBuilder(
-      stream: _chatService.getMessages(
-          widget.receiverUserEmail, _firebseAuth.currentUser!.email ?? 'default_email'),
+      stream: _chatService.getMessages(widget.receiverUserEmail,
+          _firebseAuth.currentUser!.email ?? 'default_email'),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error${snapshot.error}');
@@ -88,18 +91,21 @@ class _ChatPageState extends State<ChatPage> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: (data['senderemail'] == _firebseAuth.currentUser!.email)
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisAlignment:(data['senderemail'] == _firebseAuth.currentUser!.email)
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start  ,
+          crossAxisAlignment:
+              (data['senderemail'] == _firebseAuth.currentUser!.email)
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+          mainAxisAlignment:
+              (data['senderemail'] == _firebseAuth.currentUser!.email)
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
           children: [
             Text(
               senderEmail,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text(messageText),
+            SizedBox(height: 5,),
+            ChatBubble(message: messageText),
           ],
         ),
       ),
@@ -108,28 +114,31 @@ class _ChatPageState extends State<ChatPage> {
 
 //build message input
   Widget _buildMessageInput() {
-    return Row(
-      children: [
-        // Other widgets can be added here
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          // Other widgets can be added here
 
-        // Expanded TextField using custom MyTextField
-        Expanded(
-          child: TextField(
-            controller: _messageController,
-            decoration: InputDecoration(
-              labelText: 'Enter Message',
-              border: OutlineInputBorder(),
+          // Expanded TextField using custom MyTextField
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                labelText: 'Enter Message',
+                border: OutlineInputBorder(),
+              ),
+              obscureText: false,
             ),
-            obscureText: false,
           ),
-        ),
-        IconButton(
-            onPressed: sendMessage,
-            icon: const Icon(
-              Icons.arrow_upward,
-              size: 40,
-            ))
-      ],
+          IconButton(
+              onPressed: sendMessage,
+              icon: const Icon(
+                Icons.arrow_upward,
+                size: 40,
+              ))
+        ],
+      ),
     );
   }
 }
