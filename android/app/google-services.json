@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "198915147515",
+    "project_id": "chat-efcb9",
+    "storage_bucket": "chat-efcb9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198915147515:android:ed7328d1b112e79a58925e",
+        "android_client_info": {
+          "package_name": "wael.technologies.chat_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB60Xwp1WavcKXT1AzrZoN3OWj74_ngGrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
