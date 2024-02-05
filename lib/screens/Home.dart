@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'ChatPage.dart';
 import 'creategroup.dart';
+import 'package:todo/chat_service.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,7 +15,7 @@ class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
 }
-
+final ChatService _chatService = ChatService();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 void sign_out() async {
@@ -31,10 +33,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    String email = _auth.currentUser?.email ?? ''; // Get the user's email
+    String userEmail = _auth.currentUser?.email ?? '';
 
 // Split the email using '@' as the delimiter
-    List<String> parts = email.split('@');
+    List<String> parts = userEmail.split('@');
 
 // Check if the split produced two parts (before '@' and after '@')
     String displayText = parts.length == 2 ? parts[0] : 'Unknown';
@@ -58,7 +60,7 @@ class _HomeState extends State<Home> {
         ],
         backgroundColor: Colors.green,
       ),
-      body: _buildUserList(),
+      body: _buildChatList(userEmail),
     floatingActionButton:
     FloatingActionButton(
       onPressed: () {
@@ -78,67 +80,58 @@ class _HomeState extends State<Home> {
   }
 
   //afficher tous les utilisateurs sauf celui qui est connecte
-  Widget _buildUserList() {
-    return StreamBuilder <QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text('error');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text('loading ....');
-          }
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-
-            child: ListView(
-              children: snapshot.data!.docs.map<Widget>((doc) =>
-                  _buildUserListItem(doc)).toList(),
-            ),
-
+  Widget _buildChatList(String userEmail) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _chatService.getChatRooms(userEmail),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
           );
         }
 
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        // Obtenez la liste des documents (chat rooms) depuis le snapshot
+        List<DocumentSnapshot> chatRooms = snapshot.data!.docs;
+
+        if (chatRooms.isEmpty) {
+          // Affichez un message lorsque la liste est vide
+          return Center(
+            child: Text("Veuillez Commencer une discussion"),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: chatRooms.length,
+          itemBuilder: (context, index) {
+            Map<String, dynamic> data = chatRooms[index].data() as Map<String, dynamic>;
+
+            return ListTile(
+              title: Text(data['name'] ?? 'Unnamed Chat'),
+              subtitle: Text(data['lastMessage'] ?? 'No messages yet'),
+              onTap: () {
+                // Naviguez vers la page de discussion (ChatPage) en passant les données nécessaires
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                      receiverUserEmail: data['receiverEmail'],
+                      receiverUserID: data['receiverUserID'],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 
-//build indiv user for list items
-  Widget _buildUserListItem(DocumentSnapshot document) {
-    Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-
-    //display all users except current one
-    if (_auth.currentUser!.email != data['email']) {
-      return Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-                10.0), // Set the border radius here
-          ),
-          selectedTileColor: Colors.white,
-          title: Text(data['username'],
-            style: TextStyle(color: Colors.black, fontSize: 20),),
-          subtitle: Text(data['email'],
-              style: TextStyle(color: Colors.black, fontSize: 18)),
-          tileColor: Colors.white60,
-          onTap: () {
-            //chat page of the clicked user
-            Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                ChatPage(
-                  receiverUserEmail: data['email'] ?? data['email'] ??
-                      'emailInconnu',
-                  receiverUserID: data['username'] ?? data['uid'] ??
-                      'UtilisateurInconnu',
-
-                ),));
-          },
-        ),
-      );
-    }
-    else {
-      return Container();
-    }
-  }
 
 }
-

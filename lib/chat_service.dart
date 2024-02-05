@@ -6,7 +6,7 @@ import 'model/message.dart';
 class ChatService extends ChangeNotifier {
   // get instance of autth and firestore
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firerStore = FirebaseFirestore.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   //SEND message
   Future<void> sendMessage(String receiverEmail, String message) async {
@@ -28,8 +28,14 @@ class ChatService extends ChangeNotifier {
     ids.sort();
     String chatRoomId = ids.join("_");
     // add the message to db
-    await _firerStore.collection('chat_rooms').doc(chatRoomId).collection(
+    await _fireStore.collection('chat_rooms').doc(chatRoomId).collection(
         'messages').add(newMessage.toMap());
+  }
+
+  // Obtenir la liste des chat rooms de l'utilisateur actuel
+  Stream<QuerySnapshot> getChatRooms(String userEmail) {
+    return _fireStore.collection('chat_rooms').doc().collection(
+        'messages').snapshots();
   }
 
 //getmessages
@@ -37,7 +43,7 @@ class ChatService extends ChangeNotifier {
     List<String> ids = [userEmail, otherUserEmail];
     ids.sort();
     String chatRoomId = ids.join("_");
-    return _firerStore.collection('chat_rooms').doc(chatRoomId).collection(
+    return _fireStore.collection('chat_rooms').doc(chatRoomId).collection(
         'messages').orderBy('timestamp',descending: false ).snapshots();
   }
 }

@@ -41,7 +41,7 @@ class _createGroupState extends State<createGroup> {
     return Scaffold(
 
       appBar: AppBar(
-        title: Center(child: Text('Create Group')),
+        title: Center(child: Text('Choose User ')),
 
         backgroundColor: Colors.green,
       ),
